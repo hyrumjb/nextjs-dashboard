@@ -1,13 +1,17 @@
 import postgres from 'postgres';
 
-declare global {
-    var cachedSql: ReturnType<typeof postgres> | undefined;
+type SqlClient = ReturnType<typeof postgres>;
+
+interface CustomGlobal extends typeof globalThis {
+    cachedSql?: SqlClient;
 }
 
-const sql =
-    global.cachedSql ||
-    postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
+const globalForSql = globalThis as CustomGlobal;
 
-if (process.env.NODE_ENV !== 'production') global.cachedSql = sql;
+const sql = globalForSql.cachedSql ?? postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
+
+if (process.env.NODE_ENV !== 'production') {
+    globalForSql.cachedSql = sql;
+}
 
 export { sql };

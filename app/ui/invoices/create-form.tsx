@@ -147,7 +147,7 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
                 {state.message}
               </p>
               )}
-          </div>
+        </div>
       </div>
     </form>
   );

@@ -1,17 +1,20 @@
+/* eslint-disable no-var */
+
 import postgres from 'postgres';
 
 type SqlClient = ReturnType<typeof postgres>;
 
-interface CustomGlobal extends typeof globalThis {
-    cachedSql?: SqlClient;
+declare global {
+    var cachedSql: SqlClient | undefined;
 }
+/* eslint-enable no-var */
 
-const globalForSql = globalThis as CustomGlobal;
-
-const sql = globalForSql.cachedSql ?? postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
+const sql = global.cachedSql ?? postgres(process.env.POSTGRES_URL!, {
+    ssl: 'require',
+});
 
 if (process.env.NODE_ENV !== 'production') {
-    globalForSql.cachedSql = sql;
+    global.cachedSql = sql;
 }
 
 export { sql };
